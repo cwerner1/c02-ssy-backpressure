@@ -1,4 +1,5 @@
 const express = require('express');
+const config = require('../src/config');
 const router = express.Router();
 
 router.get('/', getItem);
@@ -7,9 +8,15 @@ router.post('/', newItem);
 let queue = [];
 
 function newItem(req, resp) {
-    queue.push(req.body);
-    resp.status(200);
-    resp.end();
+
+    if (queue.length >= config.MAX_QUEUE_LENGTH) {
+        resp.status(429);
+        resp.end();
+    } else {
+        queue.push(req.body);
+        resp.status(200);
+        resp.end();
+    }
 }
 
 function getItem(req, resp) {
